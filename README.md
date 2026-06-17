@@ -10,12 +10,13 @@ Sensor Aktuator.
 
 ## Daftar Isi
 
-- [Arsitektur Sistem](#arsitektur-sistem)
+- [Arsitektur Sistem](#arsitektur-sistem) | [Detail Teknis](docs/ARCHITECTURE.md)
 - [Cara Kerja](#cara-kerja)
-- [Hardware & Wiring](#hardware--wiring)
+- [Hardware & Wiring](#hardware--wiring) | [Panduan Lengkap](docs/WIRING.md)
 - [Struktur Kode](#struktur-kode)
 - [Cara Menjalankan](#cara-menjalankan)
-- [Rule Base Fuzzy](#rule-base-fuzzy)
+- [Rule Base Fuzzy](#rule-base-fuzzy) | [Detail FIS](docs/FUZZY_LOGIC.md)
+- [Serial Monitor](docs/SERIAL_MONITOR.md)
 - [Changelog](#changelog)
 
 ## Arsitektur Sistem
@@ -79,11 +80,24 @@ Rule R7, tanpa perlu menambah rule baru.
 
 ## Struktur Kode
 
-Sketch ditulis sebagai **multi-tab Arduino** — semua file `.h`/`.cpp`
-berada dalam satu folder sketch dan dikompilasi bersama:
+Tersedia **dua varian** firmware dengan logika yang identik:
+
+### Varian 1: Single-tab (satu file, 884 baris)
+
+Cocok untuk upload langsung dari Arduino IDE tanpa konfigurasi tambahan.
 
 ```
-SmartToll_Density_Monitor/
+src/single-tab/
+└── SmartToll_Density_Monitor.ino   ← semua kode dalam satu file
+```
+
+### Varian 2: Multi-tab (terpisah per modul, 17 file)
+
+Lebih rapi untuk development dan code review — setiap modul punya
+file `.h` (header) dan `.cpp` (implementasi) terpisah.
+
+```
+src/multi-tab/
 ├── SmartToll_Density_Monitor.ino   orkestrasi setup() & loop()
 ├── config.h                        pin mapping & konstanta sistem
 ├── globals.h / globals.cpp         state global bersama
@@ -96,16 +110,32 @@ SmartToll_Density_Monitor/
 └── debug_serial.h / debug_serial.cpp  log ke Serial Monitor
 ```
 
+Detail arsitektur dan alur eksekusi ada di [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
 ## Cara Menjalankan
+
+### Opsi A: Single-tab (paling mudah)
 
 1. Install library via Arduino Library Manager:
    - `LiquidCrystal_I2C`
    - `ESP32Servo` (oleh Kevin Harrington)
-2. Pilih board **ESP32 Dev Module** di Arduino IDE.
-3. Buka `SmartToll_Density_Monitor/SmartToll_Density_Monitor.ino`
-   (folder dan file `.ino` harus sama nama).
+2. Copy `src/single-tab/SmartToll_Density_Monitor.ino` ke folder
+   Arduino sketch baru bernama `SmartToll_Density_Monitor/`
+   (folder dan file `.ino` **harus sama nama**).
+3. Pilih board **ESP32 Dev Module** di Arduino IDE.
 4. Sambungkan wiring sesuai tabel di atas.
 5. Upload, lalu buka Serial Monitor pada baud rate **115200**.
+
+### Opsi B: Multi-tab
+
+1. Copy seluruh isi `src/multi-tab/` ke folder Arduino sketch
+   bernama `SmartToll_Density_Monitor/`.
+2. Buka `SmartToll_Density_Monitor.ino` di Arduino IDE — tab-tab
+   lain (config, sensors, fuzzy_logic, dll.) akan otomatis terbuka.
+3. Upload dan jalankan seperti biasa.
+
+> Lihat [`docs/WIRING.md`](docs/WIRING.md) untuk panduan koneksi
+> hardware dan checklist sebelum menyalakan sistem.
 
 ## Rule Base Fuzzy
 
