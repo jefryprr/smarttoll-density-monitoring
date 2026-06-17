@@ -1,0 +1,36 @@
+# Prerequisites
+*.d
+*.o
+*.elf
+*.bin
+*.hex
+
+# Build outputs
+.pio/
+.pioenvs/
+.piolibdeps/
+build/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# PlatformIO
+.platformio/
+
+# Compiled
+*.a
+*.lib
+*.exe
+
+# Debug
+*.dSYM/
+*.su
+*.idb
+*.pdb
