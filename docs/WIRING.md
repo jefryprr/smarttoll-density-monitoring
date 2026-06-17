@@ -32,7 +32,7 @@ Dokumen ini menjelaskan koneksi fisik seluruh komponen ke ESP32 DevKit beserta c
 | Semua sensor | VCC | `VCC` | 5V |
 | Semua sensor | GND | `GND` | GND |
 
-> ⚠️ **Catatan tegangan:** HC-SR04 beroperasi pada 5V, namun pin ECHO mengeluarkan sinyal 5V yang **melebihi batas aman GPIO ESP32 (3.3V)**. Untuk penggunaan jangka panjang/produksi, gunakan **voltage divider** (resistor 1kΩ + 2kΩ) atau level shifter pada jalur ECHO setiap sensor agar tidak merusak GPIO ESP32. Untuk prototipe singkat banyak yang berhasil tanpa divider, tapi ini **tidak direkomendasikan** untuk pemakaian rutin.
+> Catatan tegangan: HC-SR04 beroperasi pada 5V, namun pin ECHO mengeluarkan sinyal 5V yang melebihi batas aman GPIO ESP32 (3.3V). Untuk penggunaan jangka panjang/produksi, gunakan voltage divider (resistor 1kΩ + 2kΩ) atau level shifter pada jalur ECHO setiap sensor agar tidak merusak GPIO ESP32. Untuk prototipe singkat banyak yang berhasil tanpa divider, tapi ini tidak direkomendasikan untuk pemakaian rutin.
 
 ### Servo SG90 (Palang Masuk)
 
@@ -42,11 +42,11 @@ Dokumen ini menjelaskan koneksi fisik seluruh komponen ke ESP32 DevKit beserta c
 | VCC (merah) | 5V (idealnya power supply eksternal, lihat catatan di bawah) |
 | GND (coklat/hitam) | GND |
 
-> ⚠️ **Catatan arus:** Servo SG90 dapat menarik arus *stall* hingga ~600 mA saat menahan posisi melawan beban. Jika servo "jitter" atau ESP32 sering *brown-out reset* saat servo bergerak, gunakan **power supply 5V terpisah** untuk servo (jangan mengandalkan pin 5V dari USB ESP32), dan tetap sambungkan GND servo ke GND ESP32 (common ground).
+> Catatan arus: Servo SG90 dapat menarik arus stall hingga ~600 mA saat menahan posisi melawan beban. Jika servo jitter atau ESP32 sering brown-out reset saat servo bergerak, gunakan power supply 5V terpisah untuk servo (jangan mengandalkan pin 5V dari USB ESP32), dan tetap sambungkan GND servo ke GND ESP32 (common ground).
 
 ### LED Indikator
 
-| LED | Anoda (+) via resistor 220Ω | Katoda (−) |
+| LED | Anoda (+) via resistor 220Ω | Katoda (-) |
 |---|---|---|
 | Hijau | GPIO 18 | GND |
 | Kuning | GPIO 19 | GND |
@@ -57,7 +57,7 @@ Dokumen ini menjelaskan koneksi fisik seluruh komponen ke ESP32 DevKit beserta c
 | Pin Buzzer | Pin ESP32 |
 |---|---|
 | Positif (+) | GPIO 4 |
-| Negatif (−) | GND |
+| Negatif (-) | GND |
 
 ### LCD 16×2 I2C
 
@@ -68,8 +68,8 @@ Dokumen ini menjelaskan koneksi fisik seluruh komponen ke ESP32 DevKit beserta c
 | `SDA` | GPIO 21 |
 | `SCL` | GPIO 22 |
 
-> 💡 Jika LCD tidak menyala/menampilkan kotak hitam pekat, sesuaikan potensiometer kontras pada modul I2C (biasanya trimmer kecil biru di belakang LCD).
-> 💡 Alamat I2C default `0x27` digunakan di kode (`LiquidCrystal_I2C lcd(0x27, 16, 2)`). Jika modul Anda memakai alamat lain (misal `0x3F`), jalankan I2C scanner sketch terlebih dahulu dan sesuaikan alamat di kode.
+> Jika LCD tidak menyala/menampilkan kotak hitam pekat, sesuaikan potensiometer kontras pada modul I2C (biasanya trimmer kecil biru di belakang LCD).
+> Alamat I2C default `0x27` digunakan di kode (`LiquidCrystal_I2C lcd(0x27, 16, 2)`). Jika modul Anda memakai alamat lain (misal `0x3F`), jalankan I2C scanner sketch terlebih dahulu dan sesuaikan alamat di kode.
 
 ## Diagram Skematik (Ringkas)
 
@@ -115,13 +115,13 @@ Dokumen ini menjelaskan koneksi fisik seluruh komponen ke ESP32 DevKit beserta c
    (GPIO5)
 ```
 
-Jarak antar sensor disarankan **minimal 30–50 cm** agar terdapat ruang yang cukup untuk menguji skenario "kendaraan mogok di blind spot" (kendaraan diam tepat di tengah segmen, tidak menyentuh kedua sensor).
+Jarak antar sensor disarankan minimal 30–50 cm agar terdapat ruang yang cukup untuk menguji skenario kendaraan mogok di blind spot (kendaraan diam tepat di tengah segmen, tidak menyentuh kedua sensor).
 
 ## Checklist Sebelum Menyalakan Sistem
 
-- [ ] Seluruh GND komponen tersambung ke satu *common ground* (termasuk power supply eksternal servo, jika dipakai)
+- [ ] Seluruh GND komponen tersambung ke satu common ground (termasuk power supply eksternal servo, jika dipakai)
 - [ ] Voltage divider/level shifter terpasang pada jalur ECHO ketiga sensor (jika untuk pemakaian rutin)
 - [ ] Alamat I2C LCD sudah dikonfirmasi sesuai kode (`0x27`)
 - [ ] Servo dalam posisi bebas bergerak penuh 0°–90° tanpa terhalang fisik palang
 - [ ] Tidak ada short circuit antar pin (periksa dengan multimeter sebelum menyalakan)
-- [ ] Sumber daya mencukupi — disarankan ≥ 1A pada rail 5V jika servo + LCD + 3 sensor aktif bersamaan
+- [ ] Sumber daya mencukupi — disarankan >= 1A pada rail 5V jika servo + LCD + 3 sensor aktif bersamaan

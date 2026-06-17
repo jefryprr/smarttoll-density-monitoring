@@ -1,16 +1,15 @@
-# Prerequisites
-*.d
-*.o
-*.elf
-*.bin
-*.hex
-
-# Build outputs
+# PlatformIO
 .pio/
 .pioenvs/
 .piolibdeps/
+platformio.ini.bak
+
+# Build output
 build/
-out/
+*.bin
+*.elf
+*.hex
+*.map
 
 # IDE
 .vscode/
@@ -18,19 +17,18 @@ out/
 *.swp
 *.swo
 *~
+
+# OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# PlatformIO
-.platformio/
-
-# Compiled
+# Compiled objects
+*.o
+*.obj
+*.d
 *.a
 *.lib
-*.exe
 
 # Debug
-*.dSYM/
-*.su
-*.idb
-*.pdb
+*.log

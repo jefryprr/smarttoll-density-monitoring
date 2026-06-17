@@ -1,26 +1,9 @@
-# SmartToll v3.2.1 — Firmware ESP32
+# Source Directory
 
-> ⚠️ File firmware utama (`SmartToll_v3.2.1.ino`) perlu ditambahkan ke direktori ini.
+This directory contains the main firmware source code.
 
-## Prasyarat
+## Firmware File
 
-- Arduino IDE ≥ 1.8.19 atau PlatformIO
-- Board Manager: **ESP32 by Espressif Systems**
-- Library:
-  - `ESP32Servo` (by Kevin Harrington / John K. Bennett)
-  - `LiquidCrystal_I2C` (by Frank de Brabander / Marco Schwartz)
-  - `Wire` (built-in core ESP32)
+- **SmartToll_v3.2.1.ino** — Main Arduino sketch for the SmartToll Density Monitoring System (ESP32).
 
-## Upload
-
-```bash
-# Arduino IDE
-# 1. Buka SmartToll_v3.2.1.ino
-# 2. Tools → Board → ESP32 Arduino → ESP32 Dev Module
-# 3. Pilih port serial
-# 4. Upload (Ctrl+U)
-
-# PlatformIO
-pio run -e esp32dev -t upload
-pio device monitor -b 115200
-```
+> Place the firmware `.ino` file here before building with PlatformIO.

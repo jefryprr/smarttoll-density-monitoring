@@ -8,7 +8,7 @@ Format mengacu pada prinsip [Keep a Changelog](https://keepachangelog.com/).
 ## [v3.2.1] — ESP32 Port + LCD Vehicle Count
 
 ### Diubah
-- **`updateLCD()`**: baris kedua LCD diganti dari menampilkan *Occupancy Time* (OT) menjadi **N** — jumlah kendaraan yang sedang berada di dalam area tol.
+- **`updateLCD()`**: baris kedua LCD diganti dari menampilkan Occupancy Time (OT) menjadi **N** — jumlah kendaraan yang sedang berada di dalam area tol.
   - `N = tt_count + tt2_count` = kendaraan di segmen S1→S2 + kendaraan di segmen S2→S3.
 - Signature fungsi `updateLCD()` diperbarui: parameter `float ot_ms` digantikan `uint8_t vehicle_count`.
 - Pemanggilan `updateLCD()` pada `loop()` (tahap T10) diperbarui untuk mengirim `tt_count + tt2_count` sebagai argumen jumlah kendaraan.
@@ -34,29 +34,29 @@ Format mengacu pada prinsip [Keep a Changelog](https://keepachangelog.com/).
 ### Masalah yang Diperbaiki
 
 **Blind Spot S2→S3 Tidak Terdeteksi (v3.1).**
-Versi v3.1 hanya melacak Travel Time (TT) di segmen S1→S2. Jika kendaraan **mogok atau berhenti di antara S2 dan S3** (tidak tepat di depan sensor mana pun), sistem gagal mendeteksinya karena:
+Versi v3.1 hanya melacak Travel Time (TT) di segmen S1→S2. Jika kendaraan mogok atau berhenti di antara S2 dan S3 (tidak tepat di depan sensor mana pun), sistem gagal mendeteksinya karena:
 - TT1 sudah selesai dihitung saat kendaraan melewati S2.
 - Occupancy Time (OT) di S2 dan S3 bernilai 0 (kendaraan tidak menghalangi sensor manapun).
-- Akibatnya, output FIS = **LANCAR**, padahal terdapat kendaraan mogok yang menghalangi jalur.
+- Akibatnya, output FIS = LANCAR, padahal terdapat kendaraan mogok yang menghalangi jalur.
 
 ### Ditambahkan
 
-- **FIFO buffer kedua** (`tt2_queue`) yang melacak Travel Time di segmen S2→S3 secara paralel dengan TT1.
+- FIFO buffer kedua (`tt2_queue`) yang melacak Travel Time di segmen S2→S3 secara paralel dengan TT1.
 - Variabel baru: `TT2_QUEUE_CAPACITY`, `tt2_queue[]`, `tt2_head`, `tt2_tail`, `tt2_count`, `travel_time2_ms`, `tt_fis_input`.
 - Variabel `prev_detect3` untuk mendeteksi rising edge pada sensor S3.
 - Alur kerja TT2:
-  1. **PUSH** ke `tt2_queue` saat rising edge S2 (mulai stopwatch S2→S3) — terjadi **bersamaan** dengan POP TT1.
-  2. **POP** dari `tt2_queue` saat rising edge S3 (TT2 final dihitung).
-  3. **PEEK** `tt2_head` untuk live tracking — TT2 naik secara real-time selagi kendaraan belum sampai S3.
-  4. **Idle reset**: TT2 = 0 jika `tt2_count == 0` dan S2 = S3 = 0.
+  1. PUSH ke `tt2_queue` saat rising edge S2 (mulai stopwatch S2→S3) — terjadi bersamaan dengan POP TT1.
+  2. POP dari `tt2_queue` saat rising edge S3 (TT2 final dihitung).
+  3. PEEK `tt2_head` untuk live tracking — TT2 naik secara real-time selagi kendaraan belum sampai S3.
+  4. Idle reset: TT2 = 0 jika `tt2_count == 0` dan S2 = S3 = 0.
 
 ### Strategi Gabungan: `tt_fis_input = MAX(travel_time_ms, travel_time2_ms)`
 
-Segmen yang **paling buruk** menentukan input FIS. Konsekuensinya:
-- **Rule R7** (`TT = Lama ∧ OT = Singkat → MACET`) kini otomatis berlaku untuk **kedua** blind spot:
+Segmen yang paling buruk menentukan input FIS. Konsekuensinya:
+- Rule R7 (`TT = Lama dan OT = Singkat → MACET`) kini otomatis berlaku untuk kedua blind spot:
   - **R7a** — TT1 dominan → kendaraan mogok di S1→S2 (perilaku v3.1, dipertahankan).
   - **R7b** — TT2 dominan → kendaraan mogok di S2→S3 (kasus baru, sebelumnya tidak terdeteksi).
-- **9 rule fuzzy tidak perlu diubah sama sekali** — solusi ini murni penambahan input gabungan, bukan penambahan rule.
+- 9 rule fuzzy tidak perlu diubah sama sekali — solusi ini murni penambahan input gabungan, bukan penambahan rule.
 
 ### Diubah dari v3.1 → v3.2
 
@@ -85,16 +85,16 @@ Segmen yang **paling buruk** menentukan input FIS. Konsekuensinya:
 ## [v3.1] — FIFO Travel Time, Live Tracking, FIS Mamdani
 
 ### Ditambahkan
-- **TT1 FIFO Circular Buffer** (kapasitas 5 slot) untuk melacak Travel Time per kendaraan pada segmen S1→S2.
+- TT1 FIFO Circular Buffer (kapasitas 5 slot) untuk melacak Travel Time per kendaraan pada segmen S1→S2.
   - PUSH saat rising edge S1, POP saat rising edge S2.
-  - **Live tracking (PEEK)**: kendaraan terdepan dalam buffer terus dipantau waktu tempuhnya secara real-time, sehingga kendaraan yang mogok di tengah segmen tetap terdeteksi (nilai TT terus naik hingga `TT_MAX_MS`).
-  - **Ghost-vehicle eviction**: idle reset otomatis saat buffer kosong dan seluruh sensor bersih.
-- **Debounce software** pada sensor S1 (150 ms) untuk menghindari deteksi palsu akibat noise ultrasonik.
-- **State machine non-blocking** untuk servo palang masuk, lengkap dengan *gate clearance* sebelum menutup kembali.
-- **Kontrol LED & buzzer non-blocking** berbasis `millis()` (bukan `delay()`), sehingga tidak memblokir loop utama.
-- **FIS Mamdani dengan 9 rule** (2 input: TT & OT, masing-masing 3 himpunan fuzzy; 1 output: Congestion Level/CL dengan 3 himpunan).
-- **Defuzzifikasi Centre of Gravity (COG)** versi diskrit dengan step 5 (21 iterasi, domain output 0–100).
-- **Rule R7** (`TT = Lama ∧ OT = Singkat → MACET`) sebagai mekanisme inti deteksi kendaraan mogok di blind spot S1→S2.
+  - Live tracking (PEEK): kendaraan terdepan dalam buffer terus dipantau waktu tempuhnya secara real-time, sehingga kendaraan yang mogok di tengah segmen tetap terdeteksi (nilai TT terus naik hingga `TT_MAX_MS`).
+  - Ghost-vehicle eviction: idle reset otomatis saat buffer kosong dan seluruh sensor bersih.
+- Debounce software pada sensor S1 (150 ms) untuk menghindari deteksi palsu akibat noise ultrasonik.
+- State machine non-blocking untuk servo palang masuk, lengkap dengan gate clearance sebelum menutup kembali.
+- Kontrol LED & buzzer non-blocking berbasis `millis()` (bukan `delay()`), sehingga tidak memblokir loop utama.
+- FIS Mamdani dengan 9 rule (2 input: TT & OT, masing-masing 3 himpunan fuzzy; 1 output: Congestion Level/CL dengan 3 himpunan).
+- Defuzzifikasi Centre of Gravity (COG) versi diskrit dengan step 5 (21 iterasi, domain output 0–100).
+- Rule R7 (`TT = Lama dan OT = Singkat → MACET`) sebagai mekanisme inti deteksi kendaraan mogok di blind spot S1→S2.
 
 ---
 

@@ -1,32 +1,42 @@
 ---
 name: Bug Report
-about: Laporkan bug atau perilaku tidak terduga
+about: Report a bug to help us improve SmartToll Density Monitoring System
 title: "[BUG] "
 labels: bug
 assignees: ''
 ---
 
-## Deskripsi Bug
-Jelaskan bug secara singkat dan jelas.
+## Environment
 
-## Langkah Reproduksi
-1. ...
-2. ...
-3. ...
+- **Firmware Version:** (e.g. v3.2.1)
+- **Board:** (e.g. ESP32 DevKit v1)
+- **PlatformIO Version:**
+- **OS:** (e.g. Windows 11, macOS, Ubuntu)
 
-## Perilaku yang Diharapkan
-Apa yang seharusnya terjadi.
+## Description
 
-## Perilaku Aktual
-Apa yang benar-benar terjadi.
+A clear and concise description of the bug.
 
-## Cuplikan Log Serial Monitor
+## Steps to Reproduce
+
+1. Go to '...'
+2. Send command '...'
+3. Observe '...'
+
+## Expected Behavior
+
+A clear description of what you expected to happen.
+
+## Actual Behavior
+
+A clear description of what actually happened.
+
+## Serial Monitor Logs
+
 ```
-(tempel log yang relevan di sini, lihat docs/SERIAL_MONITOR.md untuk panduan membaca)
+Paste your serial monitor output here.
 ```
 
-## Lingkungan
-- **Board:** (ESP32 DevKit V1 / lainnya)
-- **Versi firmware:** (lihat header CHANGELOG.md)
-- **Arduino IDE / PlatformIO version:**
-- **OS:**
+## Additional Context
+
+Add any other context, screenshots, or wiring diagrams about the problem here.
