@@ -1,34 +1,15 @@
-# PlatformIO
-.pio/
-.pioenvs/
-.piolibdeps/
-platformio.ini.bak
-
-# Build output
-build/
-*.bin
-*.elf
+# Arduino IDE
 *.hex
-*.map
-
-# IDE
+*.elf
+*.bin
+build/
+.pio/
 .vscode/
-.idea/
-*.swp
-*.swo
-*~
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
-desktop.ini
 
-# Compiled objects
-*.o
-*.obj
-*.d
-*.a
-*.lib
-
-# Debug
-*.log
+# Editor
+*.swp
+*~
